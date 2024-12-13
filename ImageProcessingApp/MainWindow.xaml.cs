@@ -87,7 +87,7 @@ namespace ImageProcessingApp
                 LoadDatabaseUI();
             }
         }
-        // Обработчик поиска
+        // Обработчик поискав
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             ulong perceptualHash = Convert.ToUInt64(SearchHashTextBox.Text);
