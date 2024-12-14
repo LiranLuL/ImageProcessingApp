@@ -108,19 +108,21 @@ namespace ImageProcessingApp
             }
         }
         // Обработчик поиска
+
         private void Search_Click(object sender, RoutedEventArgs e)
         {
-            List<WriteableBitmap> areas = ConnectedComponents.FindConnectedComponents(BlackWhiteImage);
+            List<ConnectedComponentInfo> areas = ConnectedComponents.FindConnectedComponents(BlackWhiteImage);
             List<SearchResult> searchResults = new List<SearchResult>();
 
-            foreach (var area in areas)
+            foreach (var areaInfo in areas)
             {
-                // Преобразуем WriteableBitmap в Bitmap для вычисления хеша
-                System.Drawing.Bitmap bitmapArea = ConvertWriteableBitmapToBitmap(area);
+                WriteableBitmap areaImage = areaInfo.AreaImage;
 
-                // Вычисляем хеш найденной области
+                // Преобразуем WriteableBitmap в Bitmap для вычисления хеша
+                System.Drawing.Bitmap bitmapArea = ConvertWriteableBitmapToBitmap(areaImage);
                 ulong areaHash = PerceptualHash.GetImageHash(bitmapArea);
 
+               
                 // Сравниваем с записями в базе
                 foreach (var record in _imageDatabase._records)
                 {
@@ -136,19 +138,106 @@ namespace ImageProcessingApp
                         searchResults.Add(new SearchResult
                         {
                             Record = record,
-                            Similarity = similarityPercentage
+                            Similarity = similarityPercentage,
+                            X = areaInfo.X,       // координата X области
+                            Y = areaInfo.Y,       // координата Y области
+                            Width = areaInfo.Width,  // ширина области
+                            Height = areaInfo.Height // высота области
                         });
+                        DrawRectangleOnBitmap(BlackWhiteImage, areaInfo.X, areaInfo.Y, areaInfo.Width, areaInfo.Height);
                     }
+
                 }
             }
+            WriteableBitmap updatedImage = ConvertBitmapToWriteableBitmap(BlackWhiteImage);
+
+            ImageControl.Source = updatedImage;
 
             // Обновляем ItemsSource для отображения результатов
             SearchResultsListBox.ItemsSource = searchResults;
+
+            ShowImageInNewTab(updatedImage); 
+        }
+        public void DrawRectangleOnBitmap(Bitmap bitmap, int x, int y, int width, int height)
+        {
+            // Создаем объект Graphics для рисования
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                // Создаем перо для рисования (зелёная рамка)
+                using (Pen pen = new Pen(Color.Green, 3)) // Толщина линии 3
+                {
+                    // Рисуем прямоугольник
+                    g.DrawRectangle(pen, x, y, width, height);
+                }
+            }
+        }
+
+        public static WriteableBitmap ConvertBitmapToWriteableBitmap(Bitmap bitmap)
+        {
+            using (MemoryStream memory = new MemoryStream())
+            {
+                // Сохраняем Bitmap в поток
+                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                memory.Position = 0;
+
+                // Загружаем изображение из потока в WriteableBitmap
+                var writeableBitmap = new WriteableBitmap(
+                    BitmapFrame.Create(memory, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad));
+
+                return writeableBitmap;
+            }
+        }
+
+        private void ShowImageInNewTab(WriteableBitmap image)
+        {
+            // Проверяем, есть ли уже вкладка с этим изображением
+            foreach (TabItem tab in MainTabControl.Items)
+            {
+                if (tab.Header.ToString() == "Image View")
+                {
+                    // Если такая вкладка уже есть, просто активируем её и отображаем изображение
+                    ImageView.Source = image;
+                    MainTabControl.SelectedItem = tab;  // Активируем вкладку
+                    return;
+                }
+            }
+
+            // Если вкладки нет, создаем новую вкладку
+            var newTab = new TabItem
+            {
+                Header = "Image View",  // Заголовок вкладки
+            };
+
+            // Создаем контейнер для изображения
+            var imageControl = new System.Windows.Controls.Image
+            {
+                Source = image,  // Устанавливаем изображение
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Stretch = System.Windows.Media.Stretch.Uniform // Подгоняем изображение
+            };
+
+            // Создаем Grid для отображения изображения
+            var grid = new Grid();
+            grid.Children.Add(imageControl);
+
+            // Присваиваем содержимое вкладки
+            newTab.Content = grid;
+
+            // Добавляем вкладку в TabControl
+            MainTabControl.Items.Add(newTab);
+
+            // Открываем вкладку
+            MainTabControl.SelectedItem = newTab;
         }
         public class SearchResult
         {
             public ImageRecord Record { get; set; }
             public double Similarity { get; set; }
+            public int X { get; set; }  // Координата X области
+            public int Y { get; set; }  // Координата Y области
+            public int Width { get; set; }  // Ширина области
+            public int Height { get; set; }  // Высота области
         }
         // Загрузка изображения
         private void LoadImage_Click(object sender, RoutedEventArgs e)
@@ -397,7 +486,8 @@ namespace ImageProcessingApp
         }
         private void FindConnectedComponents_Click(object sender, RoutedEventArgs e)
         {
-            List<WriteableBitmap> areas = ConnectedComponents.FindConnectedComponents(BlackWhiteImage);
+            // Получаем список объектов ConnectedComponentInfo, который включает изображение, координаты и размеры области
+            List<ConnectedComponentInfo> areas = ConnectedComponents.FindConnectedComponents(BlackWhiteImage);
 
             // Очищаем StackPanel перед добавлением новых элементов
             ImageStackPanel.Children.Clear();
@@ -408,6 +498,9 @@ namespace ImageProcessingApp
             // Перебираем все найденные области
             for (int i = 0; i < areas.Count; i++)
             {
+                // Извлекаем область
+                var areaInfo = areas[i];
+
                 // Создаем контейнер для изображения и его индекса
                 StackPanel imageContainer = new StackPanel
                 {
@@ -418,16 +511,16 @@ namespace ImageProcessingApp
                 // Создаем элемент Image
                 System.Windows.Controls.Image imageControl = new System.Windows.Controls.Image
                 {
-                    Source = areas[i],
+                    Source = areaInfo.AreaImage,  // Изображение области
                     Width = 50, // Устанавливаем фиксированный размер (можно изменить)
                     Height = 50, // Устанавливаем фиксированный размер (можно изменить)
                     Margin = new Thickness(10)
                 };
 
-                // Создаем элемент TextBlock для отображения индекса
+                // Создаем элемент TextBlock для отображения индекса и координат
                 TextBlock indexText = new TextBlock
                 {
-                    Text = $"Область {i + 1}", // Индекс области
+                    Text = $"Область {i + 1}\nX: {areaInfo.X}, Y: {areaInfo.Y}\nWidth: {areaInfo.Width}, Height: {areaInfo.Height}",
                     VerticalAlignment = VerticalAlignment.Center,
                     Margin = new Thickness(0, 5, 0, 0) // Отступ сверху
                 };
@@ -440,6 +533,7 @@ namespace ImageProcessingApp
                 ImageStackPanel.Children.Add(imageContainer);
             }
         }
+
 
         private void SaveImage(Bitmap image, string filePath)
         {

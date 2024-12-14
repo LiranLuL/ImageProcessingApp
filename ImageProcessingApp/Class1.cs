@@ -6,9 +6,28 @@ using System.Windows;
 
 namespace ImageProcessingApp
 {
+
+    public class ConnectedComponentInfo
+    {
+        public WriteableBitmap AreaImage { get; set; }  // Изображение области
+        public int X { get; set; }  // Координата X верхнего левого угла области
+        public int Y { get; set; }  // Координата Y верхнего левого угла области
+        public int Width { get; set; }  // Ширина области
+        public int Height { get; set; }  // Высота области
+
+        public ConnectedComponentInfo(WriteableBitmap areaImage, int x, int y, int width, int height)
+        {
+            AreaImage = areaImage;
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
+        }
+    }
+
     public class ConnectedComponents
     {
-        public static List<WriteableBitmap> FindConnectedComponents(Bitmap bitmap)
+        public static List<ConnectedComponentInfo> FindConnectedComponents(Bitmap bitmap)
         {
             // Загружаем изображение с помощью WPF
             Bitmap img = new Bitmap(bitmap);  // Замените на путь к вашему изображению
@@ -33,17 +52,50 @@ namespace ImageProcessingApp
             }
 
             // Список для хранения изображений каждой области
-            List<WriteableBitmap> separatedAreas = new List<WriteableBitmap>();
+            List<ConnectedComponentInfo> connectedComponents = new List<ConnectedComponentInfo>();
 
-            // Для каждой области создаем отдельное изображение
+            // Для каждой области создаем объект ConnectedComponentInfo с координатами и изображением
             for (int currentLabel = 1; currentLabel < label; currentLabel++)
             {
-                WriteableBitmap areaImage = CreateAreaImage(labels, img, width, height, currentLabel);
-                separatedAreas.Add(areaImage);
+                // Получаем информацию о компоненте (изображение + координаты)
+                ConnectedComponentInfo componentInfo = CreateComponentInfo(labels, img, width, height, currentLabel);
+                connectedComponents.Add(componentInfo);
             }
 
-            return separatedAreas;
+            return connectedComponents;
         }
+
+        // Метод для создания объекта ConnectedComponentInfo с изображением и координатами
+        static ConnectedComponentInfo CreateComponentInfo(int[,] labels, Bitmap img, int width, int height, int currentLabel)
+        {
+            int minX = width, minY = height, maxX = 0, maxY = 0;
+
+            // Проходим по меткам и находим минимальные и максимальные координаты для текущей области
+            for (int i = 0; i < height; ++i)
+            {
+                for (int j = 0; j < width; ++j)
+                {
+                    if (labels[i, j] == currentLabel)
+                    {
+                        if (i < minY) minY = i;
+                        if (i > maxY) maxY = i;
+                        if (j < minX) minX = j;
+                        if (j > maxX) maxX = j;
+                    }
+                }
+            }
+
+            // Вычисляем размеры области
+            int areaWidth = maxX - minX + 1;
+            int areaHeight = maxY - minY + 1;
+
+            // Создаем изображение области
+            WriteableBitmap areaImage = CreateAreaImage(labels, img, width, height, currentLabel);
+
+            // Возвращаем объект ConnectedComponentInfo с изображением и координатами
+            return new ConnectedComponentInfo(areaImage, minX, minY, areaWidth, areaHeight);
+        }
+
 
         // Метод для выполнения поиска связных областей и возврата списка изображений (WriteableBitmap)
         public static List<WriteableBitmap> FindConnectedComponents(string imagePath)

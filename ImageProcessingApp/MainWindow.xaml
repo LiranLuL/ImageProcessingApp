@@ -56,7 +56,9 @@
                 <StackPanel>
                     <Button Content="Добавить запись" Click="AddRecord_Click" Margin="10"/>
                     <Button Content="Удалить запись" Click="DeleteRecord_Click" Margin="10"/>
-                    <ListBox x:Name="BaseListBox" Margin="10" SelectionMode="Single">
+
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="564" Width="1542">
+                        <ListBox x:Name="BaseListBox" Margin="10" SelectionMode="Single">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel>
@@ -65,11 +67,11 @@
                                     <!-- Отображаем ID записи -->
                                     <TextBlock Text="{Binding Id}" HorizontalAlignment="Center"/>
                                     <TextBlock Text="{Binding PerceptualHash}" HorizontalAlignment="Center" FontStyle="Italic"/>
-
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                   </ScrollViewer>
                 </StackPanel>
 
             </TabItem>
@@ -95,7 +97,11 @@
                     </ScrollViewer>
                 </StackPanel>
             </TabItem>
-
+            <TabItem Header="Image View">
+                <Grid>
+                    <Image Name="ImageView" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform" />
+                </Grid>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>
