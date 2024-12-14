@@ -6,9 +6,10 @@ using System.Windows.Media.Imaging;
 
 namespace ImageProcessingApp
 {
+
     public class ImageDatabase
     {
-        private List<ImageRecord> _records;
+        public List<ImageRecord> _records;
         private int _nextId;
 
         public ImageDatabase()

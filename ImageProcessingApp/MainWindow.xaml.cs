@@ -70,12 +70,13 @@ namespace ImageProcessingApp
             if (openFileDialog.ShowDialog() == true)
             {
                 smallImage = new Bitmap(openFileDialog.FileName);
+                ulong perceptualHash = PerceptualHash.GetImageHash(smallImage, 8);
+                _imageDatabase.AddRecord(perceptualHash, smallImage);
+
+                LoadDatabaseUI();
             }
            
-            ulong perceptualHash = PerceptualHash.GetImageHash(smallImage, 8);
-            _imageDatabase.AddRecord(perceptualHash, smallImage);
-
-            LoadDatabaseUI();
+           
         }
         // Обработчик удаления записи
         private void DeleteRecord_Click(object sender, RoutedEventArgs e)
@@ -87,15 +88,67 @@ namespace ImageProcessingApp
                 LoadDatabaseUI();
             }
         }
-        // Обработчик поискав
+        public static System.Drawing.Bitmap ConvertWriteableBitmapToBitmap(WriteableBitmap writeableBitmap)
+        {
+            // Получаем размер изображения
+            int width = writeableBitmap.PixelWidth;
+            int height = writeableBitmap.PixelHeight;
+
+            // Создаем MemoryStream для хранения данных
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                // Кодируем WriteableBitmap в формат PNG
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(writeableBitmap));
+                encoder.Save(memoryStream);
+
+                // Загружаем изображение из потока в System.Drawing.Bitmap
+                memoryStream.Seek(0, SeekOrigin.Begin); // Устанавливаем позицию в начало потока
+                return new System.Drawing.Bitmap(memoryStream);
+            }
+        }
+        // Обработчик поиска
         private void Search_Click(object sender, RoutedEventArgs e)
         {
-            ulong perceptualHash = Convert.ToUInt64(SearchHashTextBox.Text);
-            double threshold = SimilaritySlider.Value;
+            List<WriteableBitmap> areas = ConnectedComponents.FindConnectedComponents(BlackWhiteImage);
+            List<SearchResult> searchResults = new List<SearchResult>();
 
-            var results = _imageDatabase.SearchByHash(perceptualHash, threshold);
-            
-            SearchResultsListBox.ItemsSource = results.Select(r => r.Item1);
+            foreach (var area in areas)
+            {
+                // Преобразуем WriteableBitmap в Bitmap для вычисления хеша
+                System.Drawing.Bitmap bitmapArea = ConvertWriteableBitmapToBitmap(area);
+
+                // Вычисляем хеш найденной области
+                ulong areaHash = PerceptualHash.GetImageHash(bitmapArea);
+
+                // Сравниваем с записями в базе
+                foreach (var record in _imageDatabase._records)
+                {
+                    // Рассчитываем процент совпадения хешей
+                    double similarity = PerceptualHash.HammingDistance(areaHash, record.PerceptualHash);
+
+                    // Преобразуем схожесть в процент
+                    double similarityPercentage = (1 - similarity / 64) * 100; // предположим, что хеш длины 64 бита
+
+                    if (similarityPercentage >= SimilaritySlider.Value)
+                    {
+                        // Добавляем результат поиска в список, если совпадение выше порога
+                        searchResults.Add(new SearchResult
+                        {
+                            Record = record,
+                            Similarity = similarityPercentage
+                        });
+                    }
+                }
+            }
+
+            // Обновляем ItemsSource для отображения результатов
+            SearchResultsListBox.ItemsSource = searchResults;
+        }
+        public class SearchResult
+        {
+            public ImageRecord Record { get; set; }
+            public double Similarity { get; set; }
         }
         // Загрузка изображения
         private void LoadImage_Click(object sender, RoutedEventArgs e)
