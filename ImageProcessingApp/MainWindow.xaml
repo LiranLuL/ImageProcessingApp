@@ -77,7 +77,7 @@
             <!-- Вкладка для поиска -->
             <TabItem Header="Search">
                 <StackPanel>
-                    <Slider Name="SimilaritySlider" Minimum="0" Maximum="1" TickFrequency="0.01" Value="0.8" Width="200" Margin="10"/>
+                    <Slider Name="SimilaritySlider" Minimum="0" Maximum="100"  Width="200" Margin="10"/>
                     <Button Content="Поиск" Click="Search_Click" Margin="10"/>
                     <ScrollViewer Width="1351" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="411">
                         <ListBox Name="SearchResultsListBox" Margin="10">
