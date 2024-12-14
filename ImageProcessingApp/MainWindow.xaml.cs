@@ -113,6 +113,7 @@ namespace ImageProcessingApp
         {
             List<ConnectedComponentInfo> areas = ConnectedComponents.FindConnectedComponents(BlackWhiteImage);
             List<SearchResult> searchResults = new List<SearchResult>();
+            Bitmap markedPhoto = new Bitmap(BlackWhiteImage);
 
             foreach (var areaInfo in areas)
             {
@@ -144,12 +145,12 @@ namespace ImageProcessingApp
                             Width = areaInfo.Width,  // ширина области
                             Height = areaInfo.Height // высота области
                         });
-                        DrawRectangleOnBitmap(BlackWhiteImage, areaInfo.X, areaInfo.Y, areaInfo.Width, areaInfo.Height);
+                        DrawRectangleOnBitmap(markedPhoto, areaInfo.X, areaInfo.Y, areaInfo.Width, areaInfo.Height);
                     }
 
                 }
             }
-            WriteableBitmap updatedImage = ConvertBitmapToWriteableBitmap(BlackWhiteImage);
+            WriteableBitmap updatedImage = ConvertBitmapToWriteableBitmap(markedPhoto);
 
             ImageControl.Source = updatedImage;
 
