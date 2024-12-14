@@ -90,6 +90,9 @@
                                         <TextBlock Text="{Binding Record.Id}" />
                                         <TextBlock Text="{Binding Similarity, StringFormat='{}{0:F2}%'}" />
                                         <TextBlock Text="{Binding Record.PerceptualHash}" />
+                                        <TextBlock Text="{Binding X}" />
+                                        <TextBlock Text="{Binding Y}" />
+                                        
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

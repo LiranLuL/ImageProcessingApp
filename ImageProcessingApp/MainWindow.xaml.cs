@@ -143,7 +143,8 @@ namespace ImageProcessingApp
                             X = areaInfo.X,       // координата X области
                             Y = areaInfo.Y,       // координата Y области
                             Width = areaInfo.Width,  // ширина области
-                            Height = areaInfo.Height // высота области
+                            Height = areaInfo.Height, // высота области
+                            
                         });
                         DrawRectangleOnBitmap(markedPhoto, areaInfo.X, areaInfo.Y, areaInfo.Width, areaInfo.Height);
                     }
@@ -196,33 +197,30 @@ namespace ImageProcessingApp
             {
                 if (tab.Header.ToString() == "Image View")
                 {
-                    // Если такая вкладка уже есть, просто активируем её и отображаем изображение
                     ImageView.Source = image;
-                    MainTabControl.SelectedItem = tab;  // Активируем вкладку
+                    MainTabControl.SelectedItem = tab; 
                     return;
                 }
             }
 
-            // Если вкладки нет, создаем новую вкладку
             var newTab = new TabItem
             {
-                Header = "Image View",  // Заголовок вкладки
+                Header = "Image View",  
             };
 
             // Создаем контейнер для изображения
             var imageControl = new System.Windows.Controls.Image
             {
-                Source = image,  // Устанавливаем изображение
+                Source = image, 
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Stretch = System.Windows.Media.Stretch.Uniform // Подгоняем изображение
+                Stretch = System.Windows.Media.Stretch.Uniform 
             };
 
             // Создаем Grid для отображения изображения
             var grid = new Grid();
             grid.Children.Add(imageControl);
 
-            // Присваиваем содержимое вкладки
             newTab.Content = grid;
 
             // Добавляем вкладку в TabControl
@@ -239,6 +237,8 @@ namespace ImageProcessingApp
             public int Y { get; set; }  // Координата Y области
             public int Width { get; set; }  // Ширина области
             public int Height { get; set; }  // Высота области
+            public int AreaX { get; set; }
+            public int AreaY { get; set; }
         }
         // Загрузка изображения
         private void LoadImage_Click(object sender, RoutedEventArgs e)
