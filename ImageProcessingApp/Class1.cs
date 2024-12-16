@@ -58,8 +58,11 @@ namespace ImageProcessingApp
             for (int currentLabel = 1; currentLabel < label; currentLabel++)
             {
                 // Получаем информацию о компоненте (изображение + координаты)
-                ConnectedComponentInfo componentInfo = CreateComponentInfo(labels, img, width, height, currentLabel);
-                connectedComponents.Add(componentInfo);
+                if ((width + height) > 5)
+                {
+                    ConnectedComponentInfo componentInfo = CreateComponentInfo(labels, img, width, height, currentLabel);
+                    connectedComponents.Add(componentInfo);
+                }
             }
 
             return connectedComponents;

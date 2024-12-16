@@ -87,6 +87,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Class1.cs" />
+    <Compile Include="ImagePocessor.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="ImageRecord.cs" />
     <Compile Include="MainWindow.xaml.cs">

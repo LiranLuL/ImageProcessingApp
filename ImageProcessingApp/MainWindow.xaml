@@ -1,51 +1,55 @@
 ﻿<Window x:Class="ImageProcessingApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Image Processing" Height="705" Width="1580">
+        Title="Image Processing" Height="735" Width="1580">
     <Grid>
         <!-- TabControl для вкладок -->
         <TabControl x:Name="MainTabControl" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-            <!-- Первая вкладка "Home" с вашими элементами -->
-            <TabItem Header="Home">
+            <TabItem Header="Redactor">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="17*"/>
                         <ColumnDefinition Width="100*"/>
                         <ColumnDefinition Width="1457*"/>
                     </Grid.ColumnDefinitions>
-                    <!-- Ваши элементы управления -->
                     <TextBox x:Name="OutputTextBox" 
                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                             IsReadOnly="True" Margin="373,0,10,10" Grid.Column="2"/>
+                             IsReadOnly="True" Margin="1370,0,10,10" Grid.Column="2"/>
+                    <Button Content="Эквализация R" Click="EqualizationR_Click" Margin="880,542,432,99" Grid.Column="2" RenderTransformOrigin="0.5,0.5"/>
+                    <Button Content="Эквализация G" Click="EqualizationG_Click" Margin="1045,543,272,99" Grid.Column="2" RenderTransformOrigin="0.5,0.5"/>
+                    <Button Content="Эквализация B" Click="EqualizationB_Click" Margin="1205,543,112,99" Grid.Column="2" RenderTransformOrigin="0.5,0.5"/>
+                    <Button Content="Эквализация all" Click="EqualizationAll_Click" Margin="1025,605,272,37" Grid.Column="2" RenderTransformOrigin="0.5,0.5"/>
 
-                    <Button Content="Сохранить изображение" Click="SaveImage_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Width="145" Height="20" Margin="48,0,0,0" Grid.Column="2"/>
-                    <Button Content="Загрузить изображение" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Click="LoadImage_Click" Grid.ColumnSpan="3"/>
-                    <Image Name="ImageControl" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,50,0,0" Width="750" Height="279" Grid.ColumnSpan="3"/>
-                    <Slider Name="contrastSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,360,0,0" Width="200" Minimum="-100" Maximum="100" Grid.ColumnSpan="3"/>
-                    <Button Content="Применить контраст" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="93,360,0,0" Width="150" Click="ApplyContrast_Click" Grid.Column="2"/>
-                    <Slider Name="medianSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,390,0,0" Width="200" Minimum="3" Maximum="15" Grid.ColumnSpan="3"/>
-                    <Button Content="Медианный фильтр" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="93,390,0,0" Width="150" Click="ApplyMedianFilter_Click" Grid.Column="2"/>
-                    <Slider Name="dilationSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,420,0,0" Width="200" Minimum="3" Maximum="15" Grid.ColumnSpan="3"/>
-                    <Button Content="Дилатация" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="93,420,0,0" Width="150" Click="ApplyDilation_Click" Grid.Column="2"/>
-                    <Slider Name="blackLevel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,451,0,0" Width="195" Minimum="0" Maximum="254" Grid.ColumnSpan="3"/>
-                    <Button Content="Порог ч/б" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="93,449,0,0" Width="150" Grid.Column="2"/>
 
+                    <Button Content="Сохранить изображение" Click="SaveImage_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Width="145" Height="20" Margin="640,0,0,0" Grid.Column="2"/>
+                    <Image Name="ImageControl" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="290,39,0,0" Width="1000" Height="427" Grid.Column="2"/>
+                    <Button Content="Загрузить изображение" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Click="LoadImage_Click" Grid.Column="2" Margin="475,0,0,0"/>
+                    <Slider Name="contrastSlider" ToolTip="" TickFrequency="0.02" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,539,0,0" Width="200" Value="1"  Minimum="-10" Maximum="10" Grid.Column="2" ValueChanged="contrastSlider_ValueChanged"/>
+                    <Button Content="Применить контраст" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="670,539,0,0" Width="150" Click="ApplyContrast_Click" Grid.Column="2"/>
+                    <Slider Name="medianSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,569,0,0" Width="200" Minimum="3" Maximum="15" Grid.Column="2"/>
+                    <Button Content="Медианный фильтр" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="670,569,0,0" Width="150" Click="ApplyMedianFilter_Click" Grid.Column="2"/>
+                    <Slider Name="dilationSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,632,0,0" Width="200" Minimum="1" Maximum="15" Grid.Column="2"/>
+                    <Button Content="Дилатация" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="670,631,0,0" Width="150" Click="ApplyDilation_Click" Grid.Column="2"/>
+                    <Slider Name="blackLevel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,605,0,0" Width="195" Minimum="0" Maximum="254" Value="128" Grid.Column="2"/>
+                    <Button Content="Порог ч/б" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="670,604,0,0" Width="150" Grid.Column="2"/>
+                    <Label Grid.Column="2" Content="-5" HorizontalAlignment="Left" Margin="383,535,0,0" VerticalAlignment="Top"/>
+                    <Label Grid.Column="2" Content="5" HorizontalAlignment="Left" Margin="627,535,0,0" VerticalAlignment="Top"/>
+                    <Label Grid.Column="2" Content="3" HorizontalAlignment="Left" Margin="392,563,0,0" VerticalAlignment="Top"/>
+                    <Label Grid.Column="2" Content="15" HorizontalAlignment="Left" Margin="633,566,0,0" VerticalAlignment="Top"/>
+                    <Label Grid.Column="2" Content="1" HorizontalAlignment="Left" Margin="392,628,0,0" VerticalAlignment="Top"/>
+                    <Label Grid.Column="2" Content="15" HorizontalAlignment="Left" Margin="635,625,0,0" VerticalAlignment="Top"/>
+                    <Label Grid.Column="2" Content="0" HorizontalAlignment="Left" Margin="392,601,0,0" VerticalAlignment="Top"/>
+                    <Label Grid.Column="2" Content="254" HorizontalAlignment="Left" Margin="633,601,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
 
-            <!-- Вторая вкладка -->
             <TabItem Header="Connected Components">
                 <StackPanel Orientation="Vertical">
                     <Button Content="Загрузить изображение" Click="LoadImage2_Click" Margin="10"/>
-
-                    <!-- Кнопка для поиска связных областей -->
                     <Button Content="Найти связные области" Click="FindConnectedComponents_Click"/>
-
-                    <!-- ScrollViewer для прокрутки -->
-                    <ScrollViewer Width="1192" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="184">
-                        <!-- StackPanel с горизонтальной ориентацией для изображений -->
-                        <StackPanel Orientation="Horizontal" x:Name="ImageStackPanel" Height="614" Width="Auto"/>
+                    <ScrollViewer  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="614" Width="1508">
+                        <WrapPanel x:Name="ImageStackPanel" Height="Auto" Width="1286"/>
                     </ScrollViewer>
                 </StackPanel>
             </TabItem>
@@ -59,19 +63,19 @@
 
                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="564" Width="1542">
                         <ListBox x:Name="BaseListBox" Margin="10" SelectionMode="Single">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <!-- Отображаем изображение -->
-                                    <Image Width="100" Height="100" Source="{Binding ImageSource}" Margin="5"/>
-                                    <!-- Отображаем ID записи -->
-                                    <TextBlock Text="{Binding Id}" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="{Binding PerceptualHash}" HorizontalAlignment="Center" FontStyle="Italic"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                   </ScrollViewer>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <!-- Отображаем изображение -->
+                                        <Image Width="100" Height="100" Source="{Binding ImageSource}" Margin="5"/>
+                                        <!-- Отображаем ID записи -->
+                                        <TextBlock Text="{Binding Id}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding PerceptualHash}" HorizontalAlignment="Center" FontStyle="Italic"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
                 </StackPanel>
 
             </TabItem>
@@ -92,7 +96,7 @@
                                         <TextBlock Text="{Binding Record.PerceptualHash}" />
                                         <TextBlock Text="{Binding X}" />
                                         <TextBlock Text="{Binding Y}" />
-                                        
+
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

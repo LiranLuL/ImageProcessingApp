@@ -8,6 +8,7 @@ using System;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
+using static ImageProcessingApp.MainWindow;
 
 
 namespace ImageProcessingApp
@@ -56,9 +57,9 @@ namespace ImageProcessingApp
                                                    {
                                                        Id = record.Id,
                                                        PerceptualHash = record.PerceptualHash.ToString(),
-                                                       ImageSource = record.Image.ToBitmapImage() // Преобразуем в ImageSource
+                                                       ImageSource = record.Image.ToBitmapImage()
                                                    }).ToList();
-            // Привязываем к ListBox
+            
             BaseListBox.ItemsSource = recordsWithImages;
         }
         // Обработчик добавления записи
@@ -90,18 +91,14 @@ namespace ImageProcessingApp
         }
         public static System.Drawing.Bitmap ConvertWriteableBitmapToBitmap(WriteableBitmap writeableBitmap)
         {
-            // Получаем размер изображения
             int width = writeableBitmap.PixelWidth;
             int height = writeableBitmap.PixelHeight;
 
-            // Создаем MemoryStream для хранения данных
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                // Кодируем WriteableBitmap в формат PNG
                 PngBitmapEncoder encoder = new PngBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(writeableBitmap));
                 encoder.Save(memoryStream);
-
                 // Загружаем изображение из потока в System.Drawing.Bitmap
                 memoryStream.Seek(0, SeekOrigin.Begin); // Устанавливаем позицию в начало потока
                 return new System.Drawing.Bitmap(memoryStream);
@@ -135,15 +132,14 @@ namespace ImageProcessingApp
 
                     if (similarityPercentage >= SimilaritySlider.Value)
                     {
-                        // Добавляем результат поиска в список, если совпадение выше порога
                         searchResults.Add(new SearchResult
                         {
                             Record = record,
                             Similarity = similarityPercentage,
-                            X = areaInfo.X,       // координата X области
-                            Y = areaInfo.Y,       // координата Y области
-                            Width = areaInfo.Width,  // ширина области
-                            Height = areaInfo.Height, // высота области
+                            X = areaInfo.X,       
+                            Y = areaInfo.Y,       
+                            Width = areaInfo.Width,  
+                            Height = areaInfo.Height, 
                             
                         });
                         DrawRectangleOnBitmap(markedPhoto, areaInfo.X, areaInfo.Y, areaInfo.Width, areaInfo.Height);
@@ -151,24 +147,38 @@ namespace ImageProcessingApp
 
                 }
             }
+
+            if (searchResults.Count > 0)
+            {
+                bool flag1 = false, flag2 = false;
+                for (int i = 0; i < searchResults.Count; i++)
+                {
+                    if (searchResults[i].Record.PerceptualHash == (ulong)(10616430911481484287))
+                    {
+                        flag1 = true;
+                    }
+                    if (searchResults[i].Record.PerceptualHash == (ulong)(1770338995921219583))
+                    {
+                        flag2 = true;
+                    }
+                }
+                if (flag1 && flag2) {
+                    MessageBox.Show("Два лого", "VW and Mitzu", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                }
+
+            }
             WriteableBitmap updatedImage = ConvertBitmapToWriteableBitmap(markedPhoto);
-
             ImageControl.Source = updatedImage;
-
-            // Обновляем ItemsSource для отображения результатов
             SearchResultsListBox.ItemsSource = searchResults;
-
             ShowImageInNewTab(updatedImage); 
         }
         public void DrawRectangleOnBitmap(Bitmap bitmap, int x, int y, int width, int height)
         {
-            // Создаем объект Graphics для рисования
             using (Graphics g = Graphics.FromImage(bitmap))
             {
-                // Создаем перо для рисования (зелёная рамка)
-                using (Pen pen = new Pen(Color.Green, 3)) // Толщина линии 3
+                using (Pen pen = new Pen(Color.Green, 3)) 
                 {
-                    // Рисуем прямоугольник
                     g.DrawRectangle(pen, x, y, width, height);
                 }
             }
@@ -178,7 +188,6 @@ namespace ImageProcessingApp
         {
             using (MemoryStream memory = new MemoryStream())
             {
-                // Сохраняем Bitmap в поток
                 bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
                 memory.Position = 0;
 
@@ -208,7 +217,6 @@ namespace ImageProcessingApp
                 Header = "Image View",  
             };
 
-            // Создаем контейнер для изображения
             var imageControl = new System.Windows.Controls.Image
             {
                 Source = image, 
@@ -216,27 +224,21 @@ namespace ImageProcessingApp
                 VerticalAlignment = VerticalAlignment.Center,
                 Stretch = System.Windows.Media.Stretch.Uniform 
             };
-
-            // Создаем Grid для отображения изображения
             var grid = new Grid();
             grid.Children.Add(imageControl);
-
             newTab.Content = grid;
-
             // Добавляем вкладку в TabControl
             MainTabControl.Items.Add(newTab);
-
-            // Открываем вкладку
             MainTabControl.SelectedItem = newTab;
         }
         public class SearchResult
         {
             public ImageRecord Record { get; set; }
             public double Similarity { get; set; }
-            public int X { get; set; }  // Координата X области
-            public int Y { get; set; }  // Координата Y области
-            public int Width { get; set; }  // Ширина области
-            public int Height { get; set; }  // Высота области
+            public int X { get; set; }  
+            public int Y { get; set; } 
+            public int Width { get; set; }  
+            public int Height { get; set; } 
             public int AreaX { get; set; }
             public int AreaY { get; set; }
         }
@@ -535,7 +537,6 @@ namespace ImageProcessingApp
             }
         }
 
-
         private void SaveImage(Bitmap image, string filePath)
         {
             // Сохраняем изображение в указанном формате (JPG, PNG, BMP и т.д.)
@@ -547,6 +548,41 @@ namespace ImageProcessingApp
             {
                 MessageBox.Show($"Ошибка при сохранении изображения: {ex.Message}");
             }
+        }
+
+        private void contrastSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
+
+        private void EqualizationR_Click(object sender, RoutedEventArgs e)
+        {
+            
+                ImageProcessor imageProcessor = new ImageProcessor();
+                currentImage = imageProcessor.ApplyHistogramEqualization(currentImage, true, false, false);
+                DisplayImage(currentImage);
+            
+        }
+
+        private void EqualizationG_Click(object sender, RoutedEventArgs e)
+        {
+            ImageProcessor imageProcessor = new ImageProcessor();
+            currentImage = imageProcessor.ApplyHistogramEqualization(currentImage, false, true, false);
+            DisplayImage(currentImage);
+        }
+
+        private void EqualizationB_Click(object sender, RoutedEventArgs e)
+        {
+            ImageProcessor imageProcessor = new ImageProcessor();
+            currentImage = imageProcessor.ApplyHistogramEqualization(currentImage, false, false, true);
+            DisplayImage(currentImage);
+        }
+
+        private void EqualizationAll_Click(object sender, RoutedEventArgs e)
+        {
+            ImageProcessor imageProcessor = new ImageProcessor();
+            currentImage = imageProcessor.ApplyHistogramEqualization(currentImage, true, true, true);
+            DisplayImage(currentImage);
         }
     }
 }
