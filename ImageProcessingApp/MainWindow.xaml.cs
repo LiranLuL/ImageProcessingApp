@@ -47,6 +47,12 @@ namespace ImageProcessingApp
             InitializeComponent();
             _imageDatabase = new ImageDatabase();
             LoadDatabaseUI();
+            ulong s1 = 255;
+            ulong s2 = 1;
+
+
+            double similarityPercentage = (1 - PerceptualHash.HammingDistance(s1, s2) / 64) * 100;
+            System.Diagnostics.Debug.WriteLine($"HAMM: {similarityPercentage}");
         }
         // Загрузка всех записей в UI
         private void LoadDatabaseUI()
@@ -125,12 +131,13 @@ namespace ImageProcessingApp
                 foreach (var record in _imageDatabase._records)
                 {
                     // Рассчитываем процент совпадения хешей
-                    double similarity = PerceptualHash.HammingDistance(areaHash, record.PerceptualHash);
+                    
+                    double dist = PerceptualHash.HammingDistance(areaHash, record.PerceptualHash);
+                    double similarityPercentage = (64.0 - dist) / 64.0;
+                    similarityPercentage *= 100;
+                   
 
-                    // Преобразуем схожесть в процент
-                    double similarityPercentage = (1 - similarity / 64) * 100; // предположим, что хеш длины 64 бита
-
-                    if (similarityPercentage >= SimilaritySlider.Value)
+                    if (similarityPercentage >= SimilaritySlider.Value && ((areaInfo.Width + areaInfo.Height) > 5))
                     {
                         searchResults.Add(new SearchResult
                         {
@@ -164,7 +171,6 @@ namespace ImageProcessingApp
                 }
                 if (flag1 && flag2) {
                     MessageBox.Show("Два лого", "VW and Mitzu", MessageBoxButton.OK, MessageBoxImage.Information);
-
                 }
 
             }
@@ -420,11 +426,11 @@ namespace ImageProcessingApp
                     // Применяем пороговую обработку: если яркость больше порога, делаем пиксель белым
                     if (grayValue > threshold)
                     {
-                        newBitmap.SetPixel(x, y, Color.White); // Белый цвет
+                        newBitmap.SetPixel(x, y, Color.White); 
                     }
                     else
                     {
-                        newBitmap.SetPixel(x, y, Color.Black); // Черный цвет
+                        newBitmap.SetPixel(x, y, Color.Black);
                     }
                 }
             }

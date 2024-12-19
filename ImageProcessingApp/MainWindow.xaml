@@ -24,7 +24,7 @@
 
                     <Button Content="Сохранить изображение" Click="SaveImage_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Width="145" Height="20" Margin="640,0,0,0" Grid.Column="2"/>
                     <Image Name="ImageControl" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="290,39,0,0" Width="1000" Height="427" Grid.Column="2"/>
-                    <Button Content="Загрузить изображение" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Click="LoadImage_Click" Grid.Column="2" Margin="475,0,0,0"/>
+                    <Button Content="Загрузить изображение" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="150" Click="LoadImage_Click" Grid.Column="2" Margin="475,0,0,671"/>
                     <Slider Name="contrastSlider" ToolTip="" TickFrequency="0.02" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,539,0,0" Width="200" Value="1"  Minimum="-10" Maximum="10" Grid.Column="2" ValueChanged="contrastSlider_ValueChanged"/>
                     <Button Content="Применить контраст" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="670,539,0,0" Width="150" Click="ApplyContrast_Click" Grid.Column="2"/>
                     <Slider Name="medianSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="430,569,0,0" Width="200" Minimum="3" Maximum="15" Grid.Column="2"/>
@@ -82,8 +82,17 @@
 
             <!-- Вкладка для поиска -->
             <TabItem Header="Search">
+
                 <StackPanel>
-                    <Slider Name="SimilaritySlider" Minimum="0" Maximum="100"  Width="200" Margin="10"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                        <Label Content="0" Height="26" Width="44"/>
+                        <Slider Name="SimilaritySlider" Minimum="0" Maximum="100"   Width="200" Margin="10"/>
+                        <Label  Content="100"  Height="26" Width="44"/>
+                    </StackPanel>
+
+
+
+
                     <Button Content="Поиск" Click="Search_Click" Margin="10"/>
                     <ScrollViewer Width="1351" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="411">
                         <ListBox Name="SearchResultsListBox" Margin="10">
@@ -102,6 +111,7 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </ScrollViewer>
+
                 </StackPanel>
             </TabItem>
             <TabItem Header="Image View">
@@ -110,5 +120,6 @@
                 </Grid>
             </TabItem>
         </TabControl>
+
     </Grid>
 </Window>
